@@ -1,0 +1,81 @@
+package QModel;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Executor {
+
+	
+	public static void main(String[] args) {
+		ArrayList<Token> exTokenList = new ArrayList<>();
+
+		// This is the main class for the Qmodel
+		// Initialize the run variables
+		int freeTokenCount = 100;
+		
+		// Create the token list
+		Queue<Token> freeTokenList = new LinkedList();
+		for (int i = 0; i < freeTokenCount; i++) {
+			freeTokenList.add(new Token());
+		}
+
+		// Initialize and Connect the model components
+		Queue<Station> exStationList = new LinkedList();
+		Create create1 = new Create(0, 1, 1, 1, 1, freeTokenList);
+		Station station1 = new Station("Service1", 2, 1);
+		Station station2 = new Station("Service2", 4, 1);
+		Station station3 = new Station("Service3", 6, 1);
+		exStationList.add(station1);
+		exStationList.add(station2);
+		exStationList.add(station3);
+		
+		// Start the model simulation loop
+		int tokenProcessed = 0;
+		Token inspectToken;
+		for (int time = 0; time < freeTokenCount; time++) {
+			if(!create1.isEmpty()) {
+				station1.offer(create1.poll());
+				System.out.println("create to station1");
+			}
+			if(!station1.isEmpty()) {
+				station2.offer(station1.poll());
+			}
+			if(!station2.isEmpty()) {
+				station3.offer(station2.poll());
+			}
+			if(!station3.isEmpty()) {
+				inspectToken = station3.poll();
+				tokenProcessed++;
+				System.out.println("Token exit: " + tokenProcessed + "Id: " + inspectToken.getTokenId());
+			}
+			// tick all stations in reverse
+			station3.tickStation();
+			station2.tickStation();
+			station1.tickStation();
+			create1.tick();
+			// tick the time
+			
+			// every n ticks
+				// update station statistics
+				// cleanup retired tokens and update statistics
+			
+		}
+		// stop simulation
+
+		// cleanup the token list and update statistics
+		freeTokenList.clear();
+		
+		// cleanup station list and update statistics
+		while(exStationList.peek() != null) {
+			System.out.println(exStationList.peek().getStationName() 
+					+ " Work: " + exStationList.peek().getWorkTime() 
+					+ " Idle: " + exStationList.peek().getIdleTime() 
+					+ " Wait: " + exStationList.peek().getWaitTime() 
+					+ " Block: " + exStationList.poll().getBlockTime());
+		}
+		
+
+	}
+
+}

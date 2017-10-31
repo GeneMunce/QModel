@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;QModel.Station&apos; to &apos;Service&apos;&#x0D;&#x0A;- Original project: &apos;QModel&apos;&#x0D;&#x0A;- Original element: &apos;QModel.Station&apos;&#x0D;&#x0A;- Renamed element: &apos;QModel.Service&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Rename similarly named elements&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;Station&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;QModel{Station.java[Station" matchStrategy="1" name="Service" qualified="false" references="true" similarDeclarations="true" stamp="1508823958398" textual="false" version="1.0"/>
+</session>

@@ -1,0 +1,98 @@
+package QModel;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import javafx.scene.control.TextField;
+
+public class Service extends Station{
+	private static final long serialVersionUID = -3833116895900786135L;
+	static int currentStationId = 200;
+	private Queue<Token> activeToken = new LinkedList<>();
+	ArrayList<int[]> delayList = new ArrayList<>();
+/*
+	public Service(ArrayList<TextField> tfa) {
+		super();
+		
+	}
+	*/
+	public Service(String stationName, int serviceTime, int tokenLimit, int stationType) {
+		super();
+		this.setStationName(stationName);
+		this.setServiceTime(serviceTime);
+		this.setTokenLimit(tokenLimit);
+		this.setStationId(currentStationId++);
+		this.setWorkTime(0);
+		this.setWaitTime(0);
+		this.setBlockTime(0);
+		this.setIdleTime(0);
+		this.setTokensProcessed(0);
+		this.setReleaseTime(serviceTime);
+		System.out.println("Creating a Service Station " + stationName);
+	}
+
+	public boolean isFull() {
+		if (activeToken.size() >= getTokenLimit()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean offer(Token e) {
+		//System.out.println("Attempting " + e.getTokenId() + " to " + this.stationName + " " + activeToken.size() + " " + tokenLimit);
+		if(activeToken.size() < getTokenLimit()) {
+			e.initLocalWorkingTime(getServiceTime());
+			//System.out.println(e.getTokenId() + " to " + this.stationName);
+			return activeToken.offer(e);
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public Token poll() {
+		setTokensProcessed(getTokensProcessed() + 1);
+		return super.poll();
+	}
+
+	public void tick() {
+		// if there are still tokens in the output queue then we are blocked
+		// if output is not empty assume it is also full -- may need to revisit this
+		if(!this.isEmpty()) { 
+			this.addBlockTime();
+			for (Token t: this) {
+				t.addWaitTime(1);
+				t.ticklocalDelayTime();
+			}
+		}
+		
+		// if there is there are no tokens to process we are idle
+		if(activeToken.isEmpty())
+		{ this.addIdleTime(); }
+		
+		else {  // we are processing tokens
+			
+			// loop through all tokens
+			for(Token t: activeToken) {
+				t.ticklocalWorkingTime();
+				// Update Station work time
+				setWorkTime(getWorkTime() + 1);
+			}
+			
+			// should we move a token to the output queue?			
+			while(!activeToken.isEmpty() && activeToken.peek().getlocalWorkingTime() <= 0) {
+				this.add(activeToken.poll());
+			}
+		}
+	}
+
+	public Queue<Token> getActiveToken() {
+		return activeToken;
+	}
+
+
+}

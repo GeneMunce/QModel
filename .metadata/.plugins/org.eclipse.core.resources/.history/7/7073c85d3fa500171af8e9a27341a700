@@ -1,0 +1,9 @@
+package QModel;
+
+import java.util.Queue;
+
+public class Create {
+	private int tokenCreateRate;
+	private int tokensToCreate;
+	private Queue<Token> freeTokenList;
+}

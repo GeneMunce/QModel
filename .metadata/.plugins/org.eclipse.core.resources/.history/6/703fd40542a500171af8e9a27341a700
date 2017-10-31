@@ -1,0 +1,31 @@
+package QModel;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Create extends LinkedList{
+	private int createType;
+	private int tokensToCreate;
+	private int a;
+	private int b;
+	private int c;
+	private Queue<Token> freeTokenList;
+	/*
+	 * 	createType	function	a		b		c
+	 * 	0			constant	rate	x		x
+	 * 	1			normal		mean	std_dev	x
+	 * 	2			triangular	min		max		most likely
+	 */
+
+	public Create(int createType, int tokensToCreate, int a, int b, int c, Queue<Token> freeTokenList) {
+		super();
+		this.createType = createType;
+		this.tokensToCreate = tokensToCreate;
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.freeTokenList = freeTokenList;
+	}
+	
+	
+}

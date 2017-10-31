@@ -1,0 +1,105 @@
+package QModel;
+
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+
+public class TokenStats extends ArrayList<Integer>{
+	private int[] count;
+	private static BufferedImage offscreenImage, onscreenImage;
+    private static Graphics2D offscreen, onscreen;
+
+	   	
+	public int max() {
+        int m = Integer.MIN_VALUE;
+		for (int i : this) {
+            if (i > m) m = i;
+        }
+		return m;
+	}
+
+	public int min() {
+        int m = Integer.MAX_VALUE;
+		for (int i : this) {
+            if (i < m) m = i;
+        }
+		return m;
+	}
+	
+	public int sum() {
+		int s = 0;
+		for (int i : this) {
+            s += i;
+        }		
+		return s;
+	}
+	
+	public double ave() {
+		double d = 0;
+		d = (double) sum() / (double) this.size();	
+		return d;
+	}
+	
+	public int[] hist() {
+		
+		int min = min();
+		int max = max();
+		if (max < 101) { min= 0; }
+		int bin = Math.max((max-min) / 10,1);
+		int bins = Math.min(11);
+		count = new int[bins];
+		for(int i : this) {
+			count[i/bin]++;
+		}
+		return count;
+	}
+	public void printHist() {
+		int min = min();
+		int max = max();
+		if (max < 10) { min= 0; }
+		int bin = Math.max((max-min) / 10,1);
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i < count.length; i++) {
+			sb.append(i*bin);
+			sb.append("-");
+			sb.append(((i+1)*bin) -1);
+			sb.append(":");
+			sb.append(count[i]);
+			sb.append("\n");
+		}
+		System.out.println(sb);
+	}
+	
+	public void plotHist() {
+		JFrame frame = new JFrame();
+		frame.setSize(800,600);
+		frame.setVisible(true);
+		frame.setTitle("Histogram");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int w = frame.getSize().width;
+		int h = frame.getSize().height;
+		int x = (dim.width-w)/2;
+		int y = (dim.height-h)/2;
+		int ybin = h/max();
+		int xbin = w/size();
+        offscreenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        onscreenImage  = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        offscreen = offscreenImage.createGraphics();
+        onscreen  = onscreenImage.createGraphics();
+        
+ 		for(int i = 0; i < count.length; i++) {
+			offscreen.fill(new Rectangle2D.Double(i * xbin, ybin * count[i], xbin, ybin * count[i] ));
+		}       
+		onscreen.drawImage(offscreenImage, 0, 0, null);
+        frame.repaint();
+		
+		
+		
+	}
+}

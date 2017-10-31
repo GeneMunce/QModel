@@ -1,0 +1,48 @@
+package QModel;
+
+import java.awt.List;
+import java.util.ArrayList;
+import java.util.Queue;
+
+public class Create extends ArrayList<Token>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4334563588867927474L;
+	private int createType;
+	private int tokensToCreate;
+	private int a;
+	private int b;
+	private int c;
+	private Queue<Token> freeTokenList;
+	/*
+	 * 	createType	function	a		b		c
+	 * 	0			constant	rate	x		x
+	 * 	1			normal		mean	std_dev	x
+	 * 	2			triangular	min		max		most likely
+	 */
+
+	public Create(int createType, int tokensToCreate, int a, int b, int c, Queue<Token> freeTokenList) {
+		super();
+		this.createType = createType;
+		this.tokensToCreate = tokensToCreate;
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.freeTokenList = freeTokenList;
+	}
+
+	public List poll() {
+		
+		return null;
+	}
+
+
+	private boolean isTokenReady() {
+		return false;
+	}
+	
+	public void tick() {
+		
+	}
+}

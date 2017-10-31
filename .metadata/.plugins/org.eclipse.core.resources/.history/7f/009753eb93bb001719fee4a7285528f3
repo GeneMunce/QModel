@@ -1,0 +1,157 @@
+package QModel;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
+import javafx.scene.control.TextField;
+
+public class Create extends Station {
+	/**
+	 * 
+	 */
+	static int currentCreateId = 100;
+	private static final long serialVersionUID = -4334563588867927474L;
+	private int createId;
+	private int tokensToCreate;
+	private int a;
+	private int b;
+	private int c;
+	private Queue<Token> freeTokenList;
+	private int time;
+//	private int releaseTime;
+	Random rand;	
+	private Queue<Token> activeToken = new LinkedList<>();
+
+
+	/*
+	 * createType function a b c -----------------------|-------------------- 0
+	 * constant rate x x 1 normal mean std_dev x 2 triangular min max most likely
+	 */
+
+	public Create(ArrayList<TextField> tfa, Queue<Token> freeTokenList) {
+		super();
+		this.rand = new Random();
+		this.setStationName(tfa.get(0).getCharacters().toString());
+		this.setStationType(Integer.parseInt(tfa.get(1).getCharacters().toString()));
+		this.a = Integer.parseInt(tfa.get(2).getCharacters().toString());
+		this.b = 0;
+		this.c = 0;
+		this.tokensToCreate = Integer.parseInt(tfa.get(3).getCharacters().toString());
+		this.freeTokenList = freeTokenList;
+		this.createId = currentCreateId++;
+		this.time = 0;
+
+		// fill the array with the number of concurrent tokens to process
+		for (int i = 0; i < tokensToCreate; i++) {
+			activeToken.add(freeTokenList.poll());
+			activeToken.peek().newToStation(getNewReleaseTime(), this.createId, getStationType());
+		}
+	}
+
+	public Create(String stationName, int createType, int tokensToCreate, int a, int b, int c,
+			Queue<Token> freeTokenList) {
+		super();
+		this.rand = new Random();
+		this.setStationName(stationName);
+		this.setStationType(createType);
+		this.tokensToCreate = tokensToCreate;
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.freeTokenList = freeTokenList;
+		this.createId = currentCreateId++;
+		this.time = 0;
+
+		// fill the array with the number of concurrent tokens to process
+		for (int i = 0; i < tokensToCreate; i++) {
+			activeToken.add(freeTokenList.poll());
+			activeToken.peek().newToStation(getNewReleaseTime(), this.createId, getStationType());
+
+		}
+	}
+
+	public void tick() {
+		time++;
+		
+		for(Token t : activeToken) {
+			t.ticklocalWorkingTime();
+		}
+		Iterator<Token> t = activeToken.iterator();
+		int j =0;
+		while(t.hasNext()) {
+			Token it = t.next();
+			if (it.isTokenDone()) {
+				// Release a token
+				System.out.println("Create1 releasing a token" + time);
+				it.initToken(time);
+				this.offer(it);
+				t.remove();
+				j++;
+			}
+		}
+
+		for(int i = 0; i<j; i++) {
+			// Add a new token t replace the one being releassed
+				activeToken.add(freeTokenList.poll());
+				activeToken.peek().newToStation(getNewReleaseTime(), this.createId, getStationType());
+		}
+
+		
+	}
+
+	private int getNewReleaseTime() {
+		int r;
+	
+		switch (getStationType()) {
+		case 0:
+			r = a;
+			break;
+		case 1:
+			r = rand.nextInt(a);
+			break;
+		case 2:
+			r = TriangularD(a, b, c);
+			break;
+		default:
+			r = a;
+			System.out.println("Wrong type sent to Create: " + createId);
+		}
+		System.out.println("r = " + r);
+		return r;
+	}
+
+/*	private void ReleaseTokens() {
+		for (int i = tokensToCreate; i >= 1; i--) {
+			this.add(freeTokenList.poll());
+		}
+		setWorkTime(getWorkTime() + 1);
+	}
+*/
+	@Override
+	public Token poll() {
+		setTokensProcessed(getTokensProcessed() + 1);	
+		return super.poll();
+	}
+	
+	/*
+	 * ==== Arrival rate routines 
+	 */
+	
+	private int TriangularD(int a, int b, int c) {
+		int r;
+		int p = rand.nextInt(10);
+		r = b;
+		if (p < 2) {
+			r = a;
+		}
+		if (p > 8) {
+			r = c;
+		}
+
+		return r;
+	}
+
+}

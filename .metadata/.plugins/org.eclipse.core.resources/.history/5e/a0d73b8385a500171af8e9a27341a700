@@ -1,0 +1,134 @@
+package QModel;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+
+	/**
+	 * 
+	 */
+public class Station extends LinkedList<Token>{
+	private static final long serialVersionUID = -3833116895900786135L;
+	static int currentStationId = 100;
+	private int stationId;
+	private String stationName;
+	private int serviceTime;
+	private int tokenLimit;
+	private int workTime;
+	private int waitTime;
+	private int blockTime;
+	private int idleTime;
+	private int tokensProcessed;
+	private Queue<Token> activeToken = new LinkedList<>();
+	
+	public Station(String stationName, int serviceTime, int tokenLimit) {
+		super();
+		this.stationName = stationName;
+		this.serviceTime = serviceTime;
+		this.tokenLimit = tokenLimit;
+		this.stationId = currentStationId++;
+		workTime = 0;
+		waitTime = 0;
+		blockTime = 0;
+		setIdleTime(0);
+		tokensProcessed = 0;
+		
+	}
+
+	@Override
+	public boolean add(Token e) {
+		if(this.size() > tokenLimit) {
+			return super.add(e);
+		}
+		else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean offer(Token e) {
+		if(this.size() > tokenLimit) {
+			return super.offer(e);
+		}
+		else {
+			return false;
+		}
+	}
+
+	public void tickStation() {
+		if(this.isEmpty()) {
+			setIdleTime(getIdleTime() + 1);
+		}
+		else {
+			workTime++;
+		}
+	}
+
+	public void setStationId(int stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+	public int getServiceTime() {
+		return serviceTime;
+	}
+
+	public void setServiceTime(int serviceTime) {
+		this.serviceTime = serviceTime;
+	}
+
+	public int getTokenLimit() {
+		return tokenLimit;
+	}
+
+	public void setTokenLimit(int tokenLimit) {
+		this.tokenLimit = tokenLimit;
+	}
+
+	public int getWorkTime() {
+		return workTime;
+	}
+
+	public int getWaitTime() {
+		return waitTime;
+	}
+
+	public void addWaitTime() {
+		waitTime++;
+		return;
+	}
+
+	public int getBlockTime() {
+		return blockTime;
+	}
+
+	public void addBlockTime() {
+		blockTime++;
+		return;
+	}
+
+	public int getTokensProcessed() {
+		return tokensProcessed;
+	}
+
+	public Queue<Token> getActiveToken() {
+		return activeToken;
+	}
+
+	public int getIdleTime() {
+		return idleTime;
+	}
+
+	private void setIdleTime(int idleTime) {
+		this.idleTime = idleTime;
+	}
+
+}

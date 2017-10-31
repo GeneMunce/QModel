@@ -1,0 +1,125 @@
+package QModel;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import javafx.application.Application;
+
+
+public class Executor {
+
+	
+	public static void main(String[] args) {
+		ArrayList<Token> exTokenList = new ArrayList<>();
+
+		// This is the main class for the Qmodel
+		// Initialize the run variables
+		int freeTokenCount = 1000;
+		int simulationCycles = freeTokenCount * 1;
+		
+		// Create the token list
+		Queue<Token> freeTokenList = new GenerateTokens(freeTokenCount, freeTokenCount/2);
+		TokenStats tokenWorkTime = new TokenStats();
+		TokenStats tokenWaitTime = new TokenStats();
+		TokenStats tokenDelayTime = new TokenStats();
+		
+		// Initialize and Connect the model components
+		List<Station> exStationList = new ArrayList();
+		//                          T, N, Cycles  
+		Create create1 = new Create(0, 2, 1, 1, 1, freeTokenList);
+		Station station1 = new Station("Service1", 1, 2, 0);
+		Station station2 = new Station("Queue2"  , 0, 1000, 1);
+		Station station3 = new Station("Service3", 16, 8, 2);
+		exStationList.add(station1);
+		exStationList.add(station2);
+		exStationList.add(station3);
+		
+		// Start the model simulation loop
+		int tokenProcessed = 0;
+		Token inspectToken;
+		for (int time = 0; time < simulationCycles; time++) {
+			// tick all stations in reverse
+			station3.tickStation();
+			station2.tickStation();
+			station1.tickStation();
+			create1.tick();
+			
+			while(!create1.isEmpty() && !station1.isFull()) {
+				station1.offer(create1.poll());
+				System.out.println("station 1: " + time);
+				// System.out.println("create to station1");
+			}
+			while(!station1.isEmpty() && !station2.isFull()) {
+				// System.out.println("station1 to Queue2 " + station1.peek().getWorkTime());
+				station2.offer(station1.poll());
+			}
+			while(!station2.isEmpty() && !station3.isFull()) {
+				// System.out.println("Queue2 to station3 " + station2.peek().getWorkTime());
+				station3.offer(station2.poll());
+			}
+			while(!station3.isEmpty()) {
+				inspectToken = station3.poll();
+				tokenProcessed++;
+				// System.out.println("Token exit: " + tokenProcessed + " Id: " + inspectToken.getTokenId() + " ST " + inspectToken.getWorkTime());
+				
+				// Add this token's stats to the distribution
+				tokenWaitTime.add(inspectToken.getWaitTime());
+				tokenWorkTime.add(inspectToken.getWorkTime());
+				tokenDelayTime.add(inspectToken.getDelayTime());
+				
+				freeTokenList.offer(inspectToken);
+			}
+			
+			// every n ticks
+				// update station statistics
+				// cleanup retired tokens and update statistics
+			
+		}
+		// stop simulation
+
+		// cleanup the token list and update statistics
+		freeTokenList.clear();
+		
+		// cleanup station list and update statistics
+		for( Station e : exStationList) {
+			System.out.println(e.getStationName() 
+					+ " Work: " + e.getWorkTime() 
+					+ " Idle: " + e.getIdleTime() 
+					+ " Wait: " + e.getWaitTime() 
+					+ " Block: " + e.getBlockTime()
+					+ " tokens processed: " + e.getTokensProcessed());
+		}
+		System.out.println("tokens processed: " + tokenProcessed);
+		// Token Stats
+		StringBuffer sb = new StringBuffer();
+		sb.append("Token Work min ");
+		sb.append(tokenWorkTime.min());
+		sb.append(" max ");
+		sb.append(tokenWorkTime.max());
+		sb.append(" ave ");
+		sb.append(tokenWorkTime.ave());
+		sb.append("\nToken Wait min ");
+		sb.append(tokenWaitTime.min());
+		sb.append(" max ");
+		sb.append(tokenWaitTime.max());
+		sb.append(" ave ");
+		sb.append(tokenWaitTime.ave());
+		sb.append("\nToken Delay min ");
+		sb.append(tokenDelayTime.min());
+		sb.append(" max ");
+		sb.append(tokenDelayTime.max());
+		sb.append(" ave ");
+		sb.append(tokenDelayTime.ave());
+		System.out.println(sb);
+		tokenDelayTime.hist();
+		tokenDelayTime.printHist();
+		//tokenDelayTime.plotHist();
+        
+		//Application.launch(args);
+
+		exStationList.clear();
+
+	}
+
+}

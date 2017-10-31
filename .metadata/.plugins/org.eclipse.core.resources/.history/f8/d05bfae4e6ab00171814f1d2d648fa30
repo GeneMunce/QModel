@@ -1,0 +1,15 @@
+/**
+ * 
+ */
+package QModel;
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+/**
+ * @author genem
+ *
+ */
+public class GenerateTokens extends LinkedList<E> implements Queue<E> {
+
+}

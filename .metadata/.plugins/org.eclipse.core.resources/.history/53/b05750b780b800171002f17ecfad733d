@@ -1,0 +1,9 @@
+package QModel;
+
+import java.util.LinkedList;
+
+public class Station extends LinkedList<Token>{
+	private int stationId;
+	private String stationName;
+
+}

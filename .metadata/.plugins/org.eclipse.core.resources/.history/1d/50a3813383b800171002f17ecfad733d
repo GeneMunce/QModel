@@ -1,0 +1,82 @@
+package QModel;
+
+import java.util.LinkedList;
+
+public class Station extends LinkedList<Token>{
+	static int currentStationId = 200;
+	private int stationId;
+	private String stationName;
+	private int workTime;
+	private int idleTime;
+	private int waitTime;
+	private int blockTime;
+	private int tokensProcessed;
+
+	public Station(String stationName) {
+		super();
+		this.stationId = currentStationId++;
+		this.stationName = stationName;
+		this.workTime = 0;
+		this.idleTime = 0;
+		this.waitTime = 0;
+		this.blockTime = 0;
+		this.tokensProcessed = 0;
+	}
+
+	public int getStationId() {
+		return stationId;
+	}
+
+	public void setStationId(int stationId) {
+		this.stationId = stationId;
+	}
+
+	public String getStationName() {
+		return stationName;
+	}
+
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
+	}
+
+	public int getWorkTime() {
+		return workTime;
+	}
+
+	public void setWorkTime(int workTime) {
+		this.workTime = workTime;
+	}
+
+	public int getIdleTime() {
+		return idleTime;
+	}
+
+	public void setIdleTime(int idleTime) {
+		this.idleTime = idleTime;
+	}
+
+	public int getWaitTime() {
+		return waitTime;
+	}
+
+	public void setWaitTime(int waitTime) {
+		this.waitTime = waitTime;
+	}
+
+	public int getBlockTime() {
+		return blockTime;
+	}
+
+	public void setBlockTime(int blockTime) {
+		this.blockTime = blockTime;
+	}
+
+	public int getTokensProcessed() {
+		return tokensProcessed;
+	}
+
+	public void setTokensProcessed(int tokensProcessed) {
+		this.tokensProcessed = tokensProcessed;
+	}
+	
+}
