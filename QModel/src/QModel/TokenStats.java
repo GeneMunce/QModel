@@ -1,15 +1,19 @@
+/*
+* Copyright (c) 2017, Gene Munce
+* All rights reserved.
+*/
 package QModel;
 
 import java.util.ArrayList;
 
 public class TokenStats extends ArrayList<Integer>{
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -6190913685011044127L;
 	private int[] count;
 
-	   	
+
 	public int max() {
         int m = Integer.MIN_VALUE;
 		for (int i : this) {
@@ -25,24 +29,24 @@ public class TokenStats extends ArrayList<Integer>{
         }
 		return m;
 	}
-	
+
 	public int sum() {
 		int s = 0;
 		for (int i : this) {
             s += i;
-        }		
+        }
 		return s;
 	}
-	
+
 	public double ave() {
 		double d = 0;
-		d = (double) sum() / (double) this.size();	
+		d = (double) sum() / (double) this.size();
 		return d;
 	}
-	
+
 	private int bins = 10;
 	private int bin = 1;
-	
+
 	public int[] hist(int bins) {
 		this.bins = bins;
 		int max = max();
@@ -85,4 +89,3 @@ public class TokenStats extends ArrayList<Integer>{
 	}
 
 }
-

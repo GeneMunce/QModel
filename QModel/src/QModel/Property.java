@@ -1,3 +1,7 @@
+/*
+* Copyright (c) 2017, Gene Munce
+* All rights reserved.
+*/
 package QModel;
 
 public class Property {
@@ -5,7 +9,7 @@ public class Property {
 	private int propertyId;
 	private int propertyValue;
 	private String propertyName;
-		
+
 	public Property(int propertyValue, String propertyName) {
 		super();
 		this.propertyId = currentPropertyId++;

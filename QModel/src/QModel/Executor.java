@@ -1,3 +1,7 @@
+/*
+* Copyright (c) 2017, Gene Munce
+* All rights reserved.
+*/
 package QModel;
 
 import java.util.ArrayList;
@@ -17,90 +21,51 @@ public class Executor {
 	private TokenStats tokenWaitTime;
 	private TokenStats tokenDelayTime;
 
-	public Executor(int startTokenCount, int type, int dr, int nt) {
-		// This is the main class for the Qmodel
-		// Initialize the run variables
-		this.simulationCycles = 10000;
-		int freeTokenCount = startTokenCount;
-		
-		// Create the token list
-		freeTokenList = new GenerateTokens(freeTokenCount, freeTokenCount);
-		this.tokenWorkTime = new TokenStats();
-		this.tokenWaitTime = new TokenStats();
-		this.tokenDelayTime = new TokenStats();
-		
-		/*
-		 * Create and Connect your model components here
-		*/
-		//                                     T, N, Cycles  
-		Create create1 = new Create("Create1", type, nt, dr, 1, 1, freeTokenList);
-		Service station1 = new Service("Service1", 2, 2, 0);
-		Service station2 = new Service("Queue2"  , 4, 4, 1);
-		Service station3 = new Service("Service3", 5, 5, 2);
-		/*
-		 * Add your model components to the ArrayList
-		 * They will be processed from this list 
-		 */
-		exStationList = new ArrayList<Station>();
-		exStationList.add(create1);
-		exStationList.add(station1);
-		exStationList.add(station2);
-		exStationList.add(station3);
-	}
 
 	public Executor(int startTokenCount, ArrayList<TextField> tfa) {
 		// This is the main class for the Qmodel
 		// Initialize the run variables
-		this.simulationCycles = Integer.parseInt(tfa.get(4).getCharacters().toString());
+		this.simulationCycles = Integer.parseInt(tfa.get(5).getCharacters().toString());
 		int freeTokenCount = startTokenCount;
-		
+
 		// Create the token list
 		freeTokenList = new GenerateTokens(freeTokenCount, freeTokenCount);
 		this.tokenWorkTime = new TokenStats();
 		this.tokenWaitTime = new TokenStats();
 		this.tokenDelayTime = new TokenStats();
-		
+
 		/*
 		 * Create and Connect your model components here
-		*/
-		//                                     T, N, Cycles  
-		Create create1 = new Create(tfa, freeTokenList);
-		//Service station1 = new Service("Service1", 2, 2, 0);
-		//Service station2 = new Service("Queue2"  , 4, 4, 1);
-		//Service station3 = new Service("Service3", 5, 5, 2);
-		/*
 		 * Add your model components to the ArrayList
-		 * They will be processed from this list 
-		 */
+		 * They will be processed from this list
+		*/
+		Create create1 = new Create(tfa, freeTokenList);
 		exStationList = new ArrayList<Station>();
 		exStationList.add(create1);
-		//exStationList.add(station1);
-		//exStationList.add(station2);
-		//exStationList.add(station3);
 	}
 
 	public void addStation(ArrayList<TextField> tfa) {
 		Station station1 = new Service(tfa);
 		exStationList.add(station1);
-		
+
 	}
-	
+
 	public TokenStats run(int runCycles) {
 		// Start the model simulation loop
 		this.simulationCycles = runCycles;
-		
+
 		this.tokenProcessed = 0;
 		tokenWaitTime.clear();
 		tokenWorkTime.clear();
 		tokenDelayTime.clear();
-		
+
 		Token inspectToken;
 		for (int time = 0; time < simulationCycles; time++) {
 			// tick all stations in reverse
 			for (Station s: exStationList) {
 				s.tick();
 			}
-			
+
 			for( int i = 0; i < exStationList.size() - 1;i++) {
 				while(!exStationList.get(i).isEmpty() && !exStationList.get(i+1).isFull()) {
 					exStationList.get(i+1).offer(exStationList.get(i).poll());
@@ -116,14 +81,14 @@ public class Executor {
 				tokenWaitTime.add(inspectToken.getWaitTime());
 				tokenWorkTime.add(inspectToken.getWorkTime());
 				tokenDelayTime.add(inspectToken.getDelayTime());
-				
+
 				freeTokenList.offer(inspectToken);
 			}
 
 			// every n ticks
 				// update station statistics
 				// cleanup retired tokens and update statistics
-			
+
 		}
 		// stop simulation
 
@@ -131,15 +96,15 @@ public class Executor {
 		// freeTokenList.clear();
 		return tokenDelayTime;
 	}
-	
-	
+
+
 	public void showStatistics() {
 		// cleanup station list and update statistics
 		for( Station e : exStationList) {
-			System.out.println(e.getStationName() 
-					+ " Work: " + e.getWorkTime() 
-					+ " Idle: " + e.getIdleTime() 
-					// + " Wait: " + e.getWaitTime() 
+			System.out.println(e.getStationName()
+					+ " Work: " + e.getWorkTime()
+					+ " Idle: " + e.getIdleTime()
+					// + " Wait: " + e.getWaitTime()
 					+ " Block: " + e.getBlockTime()
 					+ " tokens processed: " + e.getTokensProcessed());
 		}
@@ -168,7 +133,7 @@ public class Executor {
 		tokenDelayTime.hist(20);
 		tokenDelayTime.printHist();
 		//tokenDelayTime.plotHist();
-        
+
 		//Application.launch(args);
 
 		//exStationList.clear();

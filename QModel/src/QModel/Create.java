@@ -1,3 +1,7 @@
+/*
+* Copyright (c) 2017, Gene Munce
+* All rights reserved.
+*/
 package QModel;
 
 import java.util.ArrayList;
@@ -10,14 +14,11 @@ import javafx.scene.control.TextField;
 
 public class Create extends Station {
 	/**
-	 * 
+	 *
 	 */
 	static int currentCreateId = 100;
 	private static final long serialVersionUID = -4334563588867927474L;
 	private int tokensToCreate;
-	private int a;
-	private int b;
-	private int c;
 	private Queue<Token> freeTokenList;
 	private int time;
 	private Queue<Token> activeToken = new LinkedList<>();
@@ -33,8 +34,10 @@ public class Create extends Station {
 		this.rand = new Random();
 		this.setStationName(tfa.get(0).getCharacters().toString());
 		this.setStationType(Integer.parseInt(tfa.get(1).getCharacters().toString()));
-		this.setServiceTime(Integer.parseInt(tfa.get(2).getCharacters().toString()));
-		this.setTokenLimit(Integer.parseInt(tfa.get(3).getCharacters().toString()));
+		this.setServiceTimeA(Integer.parseInt(tfa.get(2).getCharacters().toString()));
+		this.setServiceTimeB(Integer.parseInt(tfa.get(3).getCharacters().toString()));
+		this.setTokenLimit(Integer.parseInt(tfa.get(4).getCharacters().toString()));
+		this.tokensToCreate = Integer.parseInt(tfa.get(4).getCharacters().toString());
 
 		this.setStationId(currentStationId++);
 		this.setWorkTime(0);
@@ -43,45 +46,28 @@ public class Create extends Station {
 		this.setIdleTime(0);
 		this.setTokensProcessed(0);
 		this.setReleaseTime(getServiceTime());
+		System.out.println("New Create - ID: " + this.getStationId() + 
+				" Type: " + getStationType() +
+				" A: " + this.getServiceTimeA() +
+				" B: " + this.getServiceTimeB() +
+				" Concurent: " + this.getTokenLimit() + 
+				" Tokens: " + this.tokensToCreate);
 
-		this.a = Integer.parseInt(tfa.get(2).getCharacters().toString());
-		this.b = 0;
-		this.c = 0;
-		this.tokensToCreate = Integer.parseInt(tfa.get(3).getCharacters().toString());
 		this.freeTokenList = freeTokenList;
 		this.time = 0;
 
 		// fill the array with the number of concurrent tokens to process
 		for (int i = 0; i < tokensToCreate; i++) {
-			activeToken.add(freeTokenList.poll());
-			activeToken.peek().newToStation(getNewReleaseTime(), getStationId(), getStationType());
+			Token tempT = freeTokenList.poll();
+			tempT.newToStation(getNewReleaseTime(), getStationId(), getStationType());
+			activeToken.add(tempT);
 		}
 	}
 
-	public Create(String stationName, int createType, int tokensToCreate, int a, int b, int c,
-			Queue<Token> freeTokenList) {
-		super();
-		this.rand = new Random();
-		this.setStationName(stationName);
-		this.setStationType(createType);
-		this.tokensToCreate = tokensToCreate;
-		this.a = a;
-		this.b = b;
-		this.c = c;
-		this.freeTokenList = freeTokenList;
-		this.time = 0;
-
-		// fill the array with the number of concurrent tokens to process
-		for (int i = 0; i < tokensToCreate; i++) {
-			activeToken.add(freeTokenList.poll());
-			activeToken.peek().newToStation(getServiceTime(), getStationId(), getStationType());
-
-		}
-	}
 
 	public void tick() {
 		time++;
-		
+
 		for(Token t : activeToken) {
 			t.ticklocalWorkingTime();
 		}
@@ -106,27 +92,11 @@ public class Create extends Station {
 			activeToken.add(tempToken);
 		}
 
-		
+
 	}
 
 	private int getNewReleaseTime() {
-		int r;
-	
-		switch (getStationType()) {
-		case 0:
-			r = a;
-			break;
-		case 1:
-			r = rand.nextInt(a) + 1;
-			break;
-		case 2:
-			r = TriangularDist(a, b, c);
-			break;
-		default:
-			r = a;
-			System.out.println("Wrong type sent to Create: " + getStationId());
-		}
-		//System.out.println("r = " + r);
+		int r = getServiceTime();
 		return r;
 	}
 
@@ -139,9 +109,9 @@ public class Create extends Station {
 */
 	@Override
 	public Token poll() {
-		setTokensProcessed(getTokensProcessed() + 1);	
+		setTokensProcessed(getTokensProcessed() + 1);
 		return super.poll();
 	}
-	
+
 
 }
